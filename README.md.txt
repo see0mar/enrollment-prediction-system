@@ -1,17 +1,17 @@
-# Student Enrollment Prediction System
+Student Enrollment Prediction System
 
-## Project Overview
+Project Overview
 A production-ready machine learning system that predicts student enrollment probability with 92% precision, achieving 186% improvement over baseline while reducing resource waste by 66%. Built during a 5-week data science internship in collaboration with Saint Louis University admissions data.
 
-## Key Results
-- **Precision:** 92.1% (when focusing on high-priority students)
-- **ROC-AUC:** 0.996 (near-perfect discrimination)
-- **Improvement:** +186% over traditional random outreach
-- **Resource Efficiency:** 66% reduction in wasted outreach efforts
+Key Results
+- Precision: 92.1% (when focusing on high-priority students)
+- ROC-AUC: 0.996 (near-perfect discrimination)
+- Improvement: +186% over traditional random outreach
+- Resource Efficiency: 66% reduction in wasted outreach efforts
 
-## Repository Structure
+Repository Structure
 ├── data/ # Raw and processed data (PII masked)
-├── notebooks/ # Jupyter notebooks with full analysis
+├── notebooks/ # Colab notebook with full analysis
 │ └── enrollment_prediction.ipynb
 ├── models/ # Saved model artifacts
 │ └── enrollment_predictor.pkl
@@ -22,7 +22,7 @@ A production-ready machine learning system that predicts student enrollment prob
 └── README.md
 
 
-## Installation
+Installation
 ```bash
 git clone https://github.com/yourusername/enrollment-prediction.git
 cd enrollment-prediction
@@ -31,10 +31,10 @@ Usage
 python
 from deployment.predictor import EnrollmentPredictor
 
-# Load model
-predictor = EnrollmentPredictor.load('models/enrollment_predictor.pkl')
+Load model
+predictor = EnrollmentPredictor.load('models/enrollment_predictor.joblib')
 
-# Predict for new students
+Predict for new students
 probabilities = predictor.predict_proba(student_data)
 Methodology
 Data Cleaning & Feature Engineering – 7 optimal features identified
@@ -53,7 +53,8 @@ pandas, numpy, scikit-learn, matplotlib, seaborn
 Google Colab Notebook, joblib
 
 Author
-Omar Eltokhy – LinkedIn
+Omar Eltokhy
+LinkedIn: https://www.linkedin.com/in/omareltokhy1995/
 
 License
-This project is for portfolio demonstration. Data used with permission from Excelerate supported by Saint Louis University (PII masked).
+This project is for portfolio demonstration. Data used with permission from Excelerate, supported by Saint Louis University (PII masked).
