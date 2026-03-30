@@ -1,0 +1,125 @@
+import pandas as pd
+import numpy as np
+from sklearn.metrics import roc_auc_score, precision_score, recall_score, f1_score
+
+# NOTE: You will need to define 'best_model_name', 'models', 'results',
+# 'final_model', 'final_scaler', 'optimal_feature_names', 'X_train', 'X_test'
+# if you intend to run the instantiation code for EnrollmentPredictor within this cell.
+# For loading a saved .joblib model, only the class definition itself is critical.
+
+class EnrollmentPredictor:
+    def __init__(self, model, feature_names, scaler=None, model_info=None):
+        self.model = model
+        self.feature_names = feature_names
+        self.scaler = scaler
+        self.model_info = model_info or {}
+        # Removed dependency on 'results[final_model_name]' for class definition
+        # as these variables might not be defined at the time of loading.
+        self.performance_metrics = {}
+
+    def predict_proba(self, student_data):
+        """Predict enrollment probability for student data"""
+        try:
+            # Ensure correct feature order and handle missing values
+            X_input = student_data[self.feature_names].fillna(0)
+
+            # Scale if required
+            if self.scaler is not None:
+                X_input = self.scaler.transform(X_input)
+
+            probabilities = self.model.predict_proba(X_input)[:, 1]
+            return probabilities
+        except Exception as e:
+            print(f"Prediction error: {e}")
+            return np.zeros(len(student_data))
+
+    def predict(self, student_data, threshold=0.5):
+        """Binary prediction with custom threshold"""
+        probabilities = self.predict_proba(student_data)
+        return (probabilities >= threshold).astype(int)
+
+    def predict_with_confidence(self, student_data, threshold=0.5):
+        """Predict with confidence intervals and business recommendations"""
+        probabilities = self.predict_proba(student_data)
+
+        predictions = []
+        for i, prob in enumerate(probabilities):
+            if prob >= 0.8:
+                recommendation = "HIGH_PRIORITY"
+                confidence = "VERY_HIGH"
+                action = "Immediate intensive outreach"
+            elif prob >= 0.6:
+                recommendation = "MEDIUM_HIGH_PRIORITY"
+                confidence = "HIGH"
+                action = "Standard outreach with follow-up"
+            elif prob >= threshold:
+                recommendation = "MEDIUM_PRIORITY"
+                confidence = "MEDIUM"
+                action = "Basic outreach"
+            else:
+                recommendation = "LOW_PRIORITY"
+                confidence = "LOW"
+                action = "Minimal effort"
+
+            predictions.append({
+                'student_id': student_data.index[i] if hasattr(student_data, 'index') else i,
+                'enrollment_probability': float(prob),
+                'prediction': int(prob >= threshold),
+                'recommendation': recommendation,
+                'confidence': confidence,
+                'suggested_action': action,
+                'threshold_used': float(threshold)
+            })
+
+        return predictions
+
+    def evaluate_prediction_quality(self, student_data, actual_outcomes, threshold=0.5):
+        """Evaluate model performance on new data"""
+        predictions = self.predict(student_data, threshold)
+        probabilities = self.predict_proba(student_data)
+
+        metrics = {
+            'roc_auc': roc_auc_score(actual_outcomes, probabilities),
+            'precision': precision_score(actual_outcomes, predictions, zero_division=0),
+            'recall': recall_score(actual_outcomes, predictions, zero_division=0),
+            'f1_score': f1_score(actual_outcomes, predictions, zero_division=0),
+            'sample_size': len(student_data)
+        }
+
+        return metrics
+
+    def get_model_info(self):
+        """Get model metadata for monitoring and versioning"""
+        # Placeholder for `self.performance_metrics` if it wasn't initialized
+        roc_auc = self.performance_metrics.get('roc_auc', 'N/A')
+        precision = self.performance_metrics.get('precision', 'N/A')
+        recall = self.performance_metrics.get('recall', 'N/A')
+        f1 = self.performance_metrics.get('f1', 'N/A')
+        cv_mean = self.performance_metrics.get('cv_mean', 'N/A')
+        cv_std = self.performance_metrics.get('cv_std', 'N/A')
+
+        return {
+            'model_type': type(self.model).__name__ if self.model else 'Unknown',
+            'feature_names': self.feature_names,
+            'feature_count': len(self.feature_names),
+            'performance': {
+                'roc_auc': float(roc_auc) if isinstance(roc_auc, (int, float)) else roc_auc,
+                'precision': float(precision) if isinstance(precision, (int, float)) else precision,
+                'recall': float(recall) if isinstance(recall, (int, float)) else recall,
+                'f1_score': float(f1) if isinstance(f1, (int, float)) else f1,
+                'cv_roc_auc_mean': float(cv_mean) if isinstance(cv_mean, (int, float)) else cv_mean,
+                'cv_roc_auc_std': float(cv_std) if isinstance(cv_std, (int, float)) else cv_std
+            },
+            'training_date': pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'data_shape': {
+                # These variables (X_train, X_test) are not available here
+                'training_samples': 'N/A',
+                'test_samples': 'N/A',
+                'features_used': len(self.feature_names)
+            },
+            'deployment_info': {
+                'scaler_used': self.scaler is not None,
+                'prediction_threshold': 0.5,
+                'version': '1.0'
+            }
+        }
