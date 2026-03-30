@@ -1,0 +1,26 @@
+{
+  "timestamp": "20251124_061440",
+  "best_model": "RandomForest",
+  "performance_metrics": {
+    "roc_auc": 0.9960390910161311,
+    "precision": 0.9210199004975125,
+    "recall": 0.9939597315436242,
+    "f1_score": 0.9561007101355713,
+    "cv_roc_auc_mean": 0.996362493536771,
+    "cv_roc_auc_std": 0.0006643079139520315
+  },
+  "business_impact": {
+    "baseline_success_rate": 0.32216216216216215,
+    "model_targeted_success_rate": 0.9210199004975125,
+    "absolute_improvement": 59.88577383353503,
+    "relative_improvement": 185.8870496510735,
+    "resource_efficiency_gain": 33.859459459459465,
+    "expected_additional_enrollments": 9231
+  },
+  "dataset_info": {
+    "total_students": 15415,
+    "training_samples": 10790,
+    "test_samples": 4625,
+    "positive_class_ratio": 0.3221501390176089
+  }
+}
