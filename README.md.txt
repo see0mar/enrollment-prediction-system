@@ -10,7 +10,6 @@ Key Results
 - Resource Efficiency: 66% reduction in wasted outreach efforts
 
 Repository Structure
-├── data/ # Raw and processed data (PII masked)
 ├── notebooks/ # Colab notebook with full analysis
 │ └── enrollment_prediction.ipynb
 ├── models/ # Saved model artifacts
